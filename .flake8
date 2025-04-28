@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 119
+per-file-ignores =
+    settings*.py:E402,F403,F405
+    test_settings*.py:F401,E402,F403,F405
+exclude =
+    .git,
+    __pycache__,
+    .tox,
+    .eggs,
+    *.egg,
+    .venv,
+    */migrations/*,
+    */settings.py
