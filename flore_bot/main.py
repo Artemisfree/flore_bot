@@ -20,6 +20,7 @@ class Order(BaseModel):
 
 @app.post("/notify_new_order")
 async def notify(order: Order):
+    # Основной текст заказа
     text = (
         f"🛒 New Order #{order.orderId}\n"
         f"👤 Customer: {order.customerName}\n"
@@ -28,16 +29,35 @@ async def notify(order: Order):
         f"📍 Address: {order.address}\n"
         f"📝 Notes: {order.notes}\n"
         f"💰 Total: {order.totalAmount}$\n"
-        f"📦 Status: {order.status}"
+        f"📦 Status: {order.status}\n"
     )
+
+    for item in order.items:
+        text += f"🪻 Title: {item.get('title', 'Item')}\n"
+
+    first_image_url = None
+    for item in order.items:
+        url = item.get("imageUrl")
+        if url and url.startswith("http"):
+            first_image_url = url
+            break
 
     for chat_id in CHAT_IDS:
         try:
-            await bot.send_message(
-                chat_id=chat_id,
-                text=text,
-                reply_markup=generate_status_buttons(order.orderId)
-            )
+            if first_image_url:
+                logger.info(f"Отправка фото с описанием: {first_image_url}")
+                await bot.send_photo(
+                    chat_id=chat_id,
+                    photo=first_image_url,
+                    caption=text,
+                    reply_markup=generate_status_buttons(order.orderId)
+                )
+            else:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text=text,
+                    reply_markup=generate_status_buttons(order.orderId)
+                )
         except Exception as e:
             logger.error(f"Ошибка отправки пользователю {chat_id}: {e}")
     return {"message": "Notification sent"}
@@ -56,16 +76,35 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
         f"📍 Address: {order.address}\n"
         f"📝 Notes: {order.notes}\n"
         f"💰 Total: {order.totalAmount}$\n"
-        f"📦 Status: {previousStatus} ➡️ {order.status}"
+        f"📦 Status: {previousStatus} ➡️ {order.status}\n"
     )
+
+    for item in order.items:
+        text += f"🪻 Title: {item.get('title', 'Item')}\n"
+
+    first_image_url = None
+    for item in order.items:
+        url = item.get("imageUrl")
+        if url and url.startswith("http"):
+            first_image_url = url
+            break
 
     for chat_id in CHAT_IDS:
         try:
-            await bot.send_message(
-                chat_id=chat_id,
-                text=text,
-                reply_markup=generate_status_buttons(order.orderId)
-            )
+            if first_image_url:
+                logger.info(f"Отправка фото с описанием: {first_image_url}")
+                await bot.send_photo(
+                    chat_id=chat_id,
+                    photo=first_image_url,
+                    caption=text,
+                    reply_markup=generate_status_buttons(order.orderId)
+                )
+            else:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text=text,
+                    reply_markup=generate_status_buttons(order.orderId)
+                )
         except Exception as e:
             logger.error(f"Ошибка при отправке статуса пользователю {chat_id}: {e}")
     return {"message": "Status update sent"}

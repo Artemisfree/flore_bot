@@ -92,14 +92,36 @@ async def process_order_id(message: types.Message, state: FSMContext):
                 f"📍 Address: {order['address']}\n"
                 f"📝 Notes: {order['notes']}\n"
                 f"💰 Total: {order['totalAmount']}$\n"
-                f"📦 Status: {order['status']}"
+                f"📦 Status: {order['status']}\n"
             )
 
-            await message.answer(text, reply_markup=generate_status_buttons(order["_id"]))
-        elif resp.status_code == 404:
-            await message.answer("❌ Заказ не найден.", reply_markup=main_menu)
+            for item in order.get("items", []):
+                text += f"🪻 Title: {item.get('title', 'Item')}\n"
+
+            first_image_url = None
+            for item in order.get("items", []):
+                url = item.get("imageUrl")
+                if url and url.startswith("http"):
+                    first_image_url = url
+                    break
+
+            if first_image_url:
+                await bot.send_photo(
+                    chat_id=message.chat.id,
+                    photo=first_image_url,
+                    caption=text,
+                    reply_markup=generate_status_buttons(order["_id"])
+                )
+            else:
+                await message.answer(
+                    text=text,
+                    reply_markup=generate_status_buttons(order["_id"])
+                )
+
+            # await message.answer(text, reply_markup=generate_status_buttons(order["_id"]))
         else:
-            await message.answer(f"❌ Ошибка API: {resp.status_code}", reply_markup=main_menu)
+            logger.error(f"❌ Заказ не найден. ID: {order_id}")
+            await message.answer("❌ Заказ не найден.", reply_markup=main_menu)
 
     except Exception as e:
         logger.error(f"Ошибка при поиске заказа {order_id}: {e}")
