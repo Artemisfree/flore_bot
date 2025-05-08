@@ -5,8 +5,8 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile.api
 
-  - type: worker
-    name: flore-bot
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile.bot
+  # - type: worker
+  #   name: flore-bot
+  #   env: docker
+  #   plan: free
+  #   dockerfilePath: ./Dockerfile.bot
