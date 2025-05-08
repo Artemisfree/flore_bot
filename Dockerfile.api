@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
 COPY flore_bot ./flore_bot
-COPY .env ./
+# COPY .env ./
 
 RUN poetry install --no-root
 
