@@ -79,16 +79,20 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
         f"📦 Status: {previousStatus} ➡️ {order.status}\n"
     )
 
+    logger.info(f"[notify_status_update] Items: {order.items}")
     for item in order.items:
         text += f"🪻 Title: {item.get('title', 'Item')}\n"
 
     first_image_url = None
+    logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
     for item in order.items:
         url = item.get("imageUrl")
         if url and url.startswith("http"):
             first_image_url = url
+            logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
             break
 
+    logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
     for chat_id in CHAT_IDS:
         try:
             if first_image_url:
