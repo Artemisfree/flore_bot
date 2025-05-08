@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+RUN pip install poetry
+
+ENV POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+COPY flore_bot ./flore_bot
+# COPY .env ./
+
+RUN poetry install --no-root
+
+CMD ["python", "-m", "flore_bot.run_bot"]

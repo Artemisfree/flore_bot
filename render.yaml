@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: flore-api
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.api
+
+  - type: worker
+    name: flore-bot
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.bot
