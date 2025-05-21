@@ -4,7 +4,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 import httpx
-from flore_bot.bot import bot, ORDER_STATUSES, URL, generate_status_buttons
+from flore_bot.bot import BOT_JWT, bot, ORDER_STATUSES, URL, generate_status_buttons
 from flore_bot.logger import logger
 
 router = Router()
@@ -79,7 +79,8 @@ async def process_order_id(message: types.Message, state: FSMContext):
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                headers={"is-admin": "true"},
+                # headers={"is-admin": "true"},
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
                 timeout=5.0
             )
         if resp.status_code == 200:
@@ -161,7 +162,8 @@ async def handle_status_change(callback: types.CallbackQuery):
             # 1) Получаем старый статус
             old_resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                headers={"is-admin": "true"},
+                # headers={"is-admin": "true"},
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             old_order = old_resp.json()
             old_status = old_order["status"]
@@ -170,7 +172,8 @@ async def handle_status_change(callback: types.CallbackQuery):
             patch_resp = await client.patch(
                 f"{URL}/api/orders/{order_id}/status",
                 json={"status": js_status},
-                headers={"is-admin": "true"}
+                # headers={"is-admin": "true"}
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             logger.info(f"PATCH status code: {patch_resp.status_code}")
             logger.info(f"Response text: {patch_resp.text}")
@@ -193,7 +196,8 @@ async def handle_status_change(callback: types.CallbackQuery):
             # 3) Получаем обновлённый заказ
             get_resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                headers={"is-admin": "true"}
+                # headers={"is-admin": "true"}
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             order = get_resp.json()
 

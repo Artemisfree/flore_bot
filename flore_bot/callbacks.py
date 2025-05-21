@@ -1,5 +1,5 @@
 from aiogram import types, Router
-from flore_bot.bot import bot, ORDER_STATUSES, URL
+from flore_bot.bot import BOT_JWT, bot, ORDER_STATUSES, URL
 import httpx
 from flore_bot.logger import logger
 
@@ -18,14 +18,16 @@ async def handle_status_change(callback: types.CallbackQuery):
         async with httpx.AsyncClient() as client:
             old_order_response = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                headers={"is-admin": "true"}
+                # headers={"is-admin": "true"}
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             old_order = old_order_response.json()
             old_status = old_order["status"]
             response = await client.patch(
                 f"{URL}/api/orders/{order_id}/status",
                 json={"status": js_status},
-                headers={"is-admin": "true"}
+                # headers={"is-admin": "true"}
+                headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             logger.info(f"PATCH status code: {response.status_code}")
             logger.info(
@@ -36,7 +38,8 @@ async def handle_status_change(callback: types.CallbackQuery):
                 # После обновления — сразу получаем заказ из API
                 get_response = await client.get(
                     f"{URL}/api/orders/{order_id}",
-                    headers={"is-admin": "true"}
+                    # headers={"is-admin": "true"}
+                    headers={"Authorization": f"Bearer {BOT_JWT}"},
                 )
                 order = get_response.json()
 
