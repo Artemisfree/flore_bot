@@ -28,7 +28,7 @@ async def notify(order: Order):
         f"📱 Phone: {order.phone}\n"
         f"📍 Address: {order.address}\n"
         f"📝 Notes: {order.notes}\n"
-        f"💰 Total: {order.totalAmount}$\n"
+        f"💰 Total: {order.totalAmount} AED\n"
         f"📦 Status: {order.status}\n"
     )
 
@@ -76,7 +76,7 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
         f"📱 Phone: {order.phone}\n"
         f"📍 Address: {order.address}\n"
         f"📝 Notes: {order.notes}\n"
-        f"💰 Total: {order.totalAmount}$\n"
+        f"💰 Total: {order.totalAmount} AED\n"
         f"📦 Status: {previousStatus} ➡️ {order.status}\n"
     )
 
