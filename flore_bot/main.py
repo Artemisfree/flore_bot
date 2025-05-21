@@ -34,6 +34,7 @@ async def notify(order: Order):
 
     for item in order.items:
         text += f"🪻 Title: {item.get('title', 'Item')}\n"
+        text += f"📏 Size: {item.get('size', '')}\n"
 
     first_image_url = None
     for item in order.items:
@@ -82,6 +83,7 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     logger.info(f"[notify_status_update] Items: {order.items}")
     for item in order.items:
         text += f"🪻 Title: {item.get('title', 'Item')}\n"
+        text += f"📏 Size: {item.get('size', '')}\n"
 
     first_image_url = None
     logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
