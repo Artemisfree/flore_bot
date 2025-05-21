@@ -23,12 +23,27 @@ ORDER_STATUSES = {
 }
 
 
+# def generate_status_buttons(order_id):
+#     buttons = [
+#         [InlineKeyboardButton(
+#             text=label,
+#             callback_data=f"set_status:{order_id}:{code}"
+#         )]
+#         for code, label in ORDER_STATUSES.items()
+#     ]
+#     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
 def generate_status_buttons(order_id):
-    buttons = [
-        [InlineKeyboardButton(
+    buttons = []
+    row = []
+    for i, (code, label) in enumerate(ORDER_STATUSES.items(), start=1):
+        row.append(InlineKeyboardButton(
             text=label,
             callback_data=f"set_status:{order_id}:{code}"
-        )]
-        for code, label in ORDER_STATUSES.items()
-    ]
+        ))
+        if i % 3 == 0:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
     return InlineKeyboardMarkup(inline_keyboard=buttons)
