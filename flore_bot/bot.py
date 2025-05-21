@@ -12,6 +12,7 @@ CHAT_IDS = [
 ]
 
 bot = Bot(token=TOKEN)
+BOT_JWT = os.getenv("BOT_JWT")
 dp = Dispatcher()
 
 ORDER_STATUSES = {
