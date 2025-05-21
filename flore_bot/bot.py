@@ -23,16 +23,6 @@ ORDER_STATUSES = {
 }
 
 
-# def generate_status_buttons(order_id):
-#     buttons = [
-#         [InlineKeyboardButton(
-#             text=label,
-#             callback_data=f"set_status:{order_id}:{code}"
-#         )]
-#         for code, label in ORDER_STATUSES.items()
-#     ]
-#     return InlineKeyboardMarkup(inline_keyboard=buttons)
-
 def generate_status_buttons(order_id):
     buttons = []
     row = []

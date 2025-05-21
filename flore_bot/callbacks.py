@@ -32,6 +32,11 @@ async def handle_status_change(callback: types.CallbackQuery):
             )
 
             if response.status_code == 200:
+                # ✅ Удаляем старое сообщение с кнопками
+                try:
+                    await callback.message.delete()
+                except Exception as e:
+                    logger.warning(f"Не удалось удалить старое сообщение: {e}")
                 # После обновления — сразу получаем заказ из API
                 get_response = await client.get(
                     f"{URL}/api/orders/{order_id}",
