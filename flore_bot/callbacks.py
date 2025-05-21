@@ -12,6 +12,7 @@ async def handle_status_change(callback: types.CallbackQuery):
     js_status = ORDER_STATUSES[new_status_code]
 
     await bot.answer_callback_query(callback.id, text="Обрабатываю...")
+    logger.warning("🧪 CALLBACK handle_status_change")
 
     try:
         async with httpx.AsyncClient() as client:
@@ -32,11 +33,6 @@ async def handle_status_change(callback: types.CallbackQuery):
             )
 
             if response.status_code == 200:
-                # ✅ Удаляем старое сообщение с кнопками
-                try:
-                    await callback.message.delete()
-                except Exception as e:
-                    logger.warning(f"Не удалось удалить старое сообщение: {e}")
                 # После обновления — сразу получаем заказ из API
                 get_response = await client.get(
                     f"{URL}/api/orders/{order_id}",
