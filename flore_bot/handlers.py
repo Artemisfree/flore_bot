@@ -155,6 +155,7 @@ async def handle_status_change(callback: types.CallbackQuery):
     js_status = ORDER_STATUSES[new_status_code]
 
     await bot.answer_callback_query(callback.id, text="Обрабатываю...")
+    logger.warning("🧪 HANDLERS handle_status_change")
 
     try:
         async with httpx.AsyncClient() as client:
