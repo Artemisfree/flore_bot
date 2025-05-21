@@ -181,3 +181,7 @@ __pycache__/
 *.pyd
 .env
 bot.log
+
+
+# Локальный скрипт для генерации токена
+flore_bot/jwt_script.py
