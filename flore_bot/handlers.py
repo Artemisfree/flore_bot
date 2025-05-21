@@ -97,6 +97,7 @@ async def process_order_id(message: types.Message, state: FSMContext):
 
             for item in order.get("items", []):
                 text += f"🪻 Title: {item.get('title', 'Item')}\n"
+                text += f"📏 Size: {item.get('size', '')}\n"
 
             first_image_url = None
             for item in order.get("items", []):
