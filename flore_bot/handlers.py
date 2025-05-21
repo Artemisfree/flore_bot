@@ -91,7 +91,7 @@ async def process_order_id(message: types.Message, state: FSMContext):
                 f"📱 Phone: {order['phone']}\n"
                 f"📍 Address: {order['address']}\n"
                 f"📝 Notes: {order['notes']}\n"
-                f"💰 Total: {order['totalAmount']}$\n"
+                f"💰 Total: {order['totalAmount']} AED\n"
                 f"📦 Status: {order['status']}\n"
             )
 
