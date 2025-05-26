@@ -88,6 +88,10 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     for item in order.items:
         text += f"🪻 Title: {item.get('title', 'Item')}\n"
         text += f"📏 Size: {item.get('size', '')}\n"
+    
+    logger.info(f"[notify_status_update] chat_ids: {CHAT_IDS}")
+    logger.info(f"[notify_status_update] caption length: {len(text)}")
+    logger.info(f"[notify_status_update] deliveryTime: {order.deliveryTime}")
 
     first_image_url = None
     logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
@@ -101,6 +105,8 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
     for chat_id in CHAT_IDS:
         try:
+            logger.info(f"[notify_status_update] Sending to chat_id: {chat_id}")
+            logger.info(f"[notify_status_update] first_image_url: {first_image_url}")
             if first_image_url:
                 logger.info(f"Отправка фото с описанием: {first_image_url}")
                 await bot.send_photo(
@@ -109,12 +115,15 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
                     caption=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
+                logger.info(f"[notify_status_update] Photo sent to {chat_id}")
             else:
+                logger.info(f"[notify_status_update] Trying to send message to {chat_id}")
                 await bot.send_message(
                     chat_id=chat_id,
                     text=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
+                logger.info(f"[notify_status_update] Message sent to {chat_id}")
         except Exception as e:
             logger.error(f"Ошибка при отправке статуса пользователю {chat_id}: {e}")
     return {"message": "Status update sent"}
