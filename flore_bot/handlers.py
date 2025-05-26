@@ -218,6 +218,8 @@ async def handle_status_change(callback: types.CallbackQuery):
                 params=params,
                 timeout=10.0
             )
+            logger.info(f"POST notify_status_update code: {get_resp.status_code}")
+            logger.info(f"Response text: {get_resp.text}")
 
             logger.info(f"{old_status} → {order['status']}")
 
