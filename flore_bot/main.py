@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from flore_bot.bot import bot, generate_status_buttons, CHAT_IDS
@@ -16,7 +17,7 @@ class Order(BaseModel):
     notes: str
     items: list[dict]
     status: str
-    deliveryTime: str
+    deliveryTime: Optional[str] = None
 
 
 @app.post("/notify_new_order")
@@ -89,19 +90,16 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
         text += f"📏 Size: {item.get('size', '')}\n"
 
     first_image_url = None
-    logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
     for item in order.items:
         url = item.get("imageUrl")
         if url and url.startswith("http"):
             first_image_url = url
-            logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
             break
 
     logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
     for chat_id in CHAT_IDS:
         try:
             if first_image_url:
-                logger.info(f"Отправка фото с описанием: {first_image_url}")
                 await bot.send_photo(
                     chat_id=chat_id,
                     photo=first_image_url,
