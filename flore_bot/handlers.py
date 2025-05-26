@@ -79,7 +79,6 @@ async def process_order_id(message: types.Message, state: FSMContext):
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                # headers={"is-admin": "true"},
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
                 timeout=5.0
             )
@@ -91,6 +90,7 @@ async def process_order_id(message: types.Message, state: FSMContext):
                 f"📧 Email: {order['email']}\n"
                 f"📱 Phone: {order['phone']}\n"
                 f"📍 Address: {order['address']}\n"
+                f"🕒 Delivery time: {order['deliveryTime']}\n"
                 f"📝 Notes: {order['notes']}\n"
                 f"💰 Total: {order['totalAmount']} AED\n"
                 f"📦 Status: {order['status']}\n"
@@ -162,7 +162,6 @@ async def handle_status_change(callback: types.CallbackQuery):
             # 1) Получаем старый статус
             old_resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                # headers={"is-admin": "true"},
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             old_order = old_resp.json()
@@ -172,7 +171,6 @@ async def handle_status_change(callback: types.CallbackQuery):
             patch_resp = await client.patch(
                 f"{URL}/api/orders/{order_id}/status",
                 json={"status": js_status},
-                # headers={"is-admin": "true"}
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             logger.info(f"PATCH status code: {patch_resp.status_code}")
@@ -196,7 +194,6 @@ async def handle_status_change(callback: types.CallbackQuery):
             # 3) Получаем обновлённый заказ
             get_resp = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                # headers={"is-admin": "true"}
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             order = get_resp.json()
@@ -209,6 +206,7 @@ async def handle_status_change(callback: types.CallbackQuery):
                 "email":        order["email"],
                 "phone":        order["phone"],
                 "address":      order["address"],
+                "deliveryTime": order["deliveryTime"],
                 "notes":        order["notes"],
                 "items":        order["items"],
                 "status":       order["status"],

@@ -16,6 +16,7 @@ class Order(BaseModel):
     notes: str
     items: list[dict]
     status: str
+    deliveryTime: str
 
 
 @app.post("/notify_new_order")
@@ -27,6 +28,7 @@ async def notify(order: Order):
         f"📧 Email: {order.email}\n"
         f"📱 Phone: {order.phone}\n"
         f"📍 Address: {order.address}\n"
+        f"🕒 Delivery time: {order.deliveryTime or 'Not specified'}\n"
         f"📝 Notes: {order.notes}\n"
         f"💰 Total: {order.totalAmount} AED\n"
         f"📦 Status: {order.status}\n"
@@ -75,6 +77,7 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
         f"📧 Email: {order.email}\n"
         f"📱 Phone: {order.phone}\n"
         f"📍 Address: {order.address}\n"
+        f"🕒 Delivery time: {order.deliveryTime or 'Not specified'}\n"
         f"📝 Notes: {order.notes}\n"
         f"💰 Total: {order.totalAmount} AED\n"
         f"📦 Status: {previousStatus} ➡️ {order.status}\n"
