@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from flore_bot.bot import bot, generate_status_buttons, CHAT_IDS
@@ -16,7 +17,7 @@ class Order(BaseModel):
     notes: str
     items: list[dict]
     status: str
-    deliveryTime: str
+    deliveryTime: Optional[str] = None
 
 
 @app.post("/notify_new_order")
