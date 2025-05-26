@@ -94,12 +94,10 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     logger.info(f"[notify_status_update] deliveryTime: {order.deliveryTime}")
 
     first_image_url = None
-    logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
     for item in order.items:
         url = item.get("imageUrl")
         if url and url.startswith("http"):
             first_image_url = url
-            logger.info(f"[notify_status_update] Первая картинка: {first_image_url}")
             break
 
     logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
@@ -108,7 +106,6 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
             logger.info(f"[notify_status_update] Sending to chat_id: {chat_id}")
             logger.info(f"[notify_status_update] first_image_url: {first_image_url}")
             if first_image_url:
-                logger.info(f"Отправка фото с описанием: {first_image_url}")
                 await bot.send_photo(
                     chat_id=chat_id,
                     photo=first_image_url,
