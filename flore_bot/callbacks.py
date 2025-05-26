@@ -18,7 +18,6 @@ async def handle_status_change(callback: types.CallbackQuery):
         async with httpx.AsyncClient() as client:
             old_order_response = await client.get(
                 f"{URL}/api/orders/{order_id}",
-                # headers={"is-admin": "true"}
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             old_order = old_order_response.json()
@@ -26,7 +25,6 @@ async def handle_status_change(callback: types.CallbackQuery):
             response = await client.patch(
                 f"{URL}/api/orders/{order_id}/status",
                 json={"status": js_status},
-                # headers={"is-admin": "true"}
                 headers={"Authorization": f"Bearer {BOT_JWT}"},
             )
             logger.info(f"PATCH status code: {response.status_code}")
@@ -38,7 +36,6 @@ async def handle_status_change(callback: types.CallbackQuery):
                 # После обновления — сразу получаем заказ из API
                 get_response = await client.get(
                     f"{URL}/api/orders/{order_id}",
-                    # headers={"is-admin": "true"}
                     headers={"Authorization": f"Bearer {BOT_JWT}"},
                 )
                 order = get_response.json()
@@ -51,6 +48,7 @@ async def handle_status_change(callback: types.CallbackQuery):
                     "email":         order["email"],
                     "phone":         order["phone"],
                     "address":       order["address"],
+                    "deliveryTime":  order["deliveryTime"],
                     "notes":         order["notes"],
                     "items":         order["items"],
                     "status":       order["status"],
