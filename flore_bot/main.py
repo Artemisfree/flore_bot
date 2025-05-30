@@ -92,6 +92,10 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     for item in order.items:
         text += f"🪻 Title: {item.get('title', 'Item')}\n"
         text += f"📏 Size: {item.get('size', '')}\n"
+    
+    logger.info(f"[notify_status_update] chat_ids: {CHAT_IDS}")
+    logger.info(f"[notify_status_update] caption length: {len(text)}")
+    logger.info(f"[notify_status_update] deliveryTime: {order.deliveryTime}")
 
     first_image_url = None
     for item in order.items:
@@ -110,6 +114,8 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
     logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
     for chat_id in CHAT_IDS:
         try:
+            logger.info(f"[notify_status_update] Sending to chat_id: {chat_id}")
+            logger.info(f"[notify_status_update] first_image_url: {first_image_url}")
             if first_image_url:
                 msg = await bot.send_photo(
                     chat_id=chat_id,
@@ -117,6 +123,7 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
                     caption=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
+                logger.info(f"[notify_status_update] Photo sent to {chat_id}")
             else:
                 msg = await bot.send_message(
                     chat_id=chat_id,
