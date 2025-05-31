@@ -3,6 +3,8 @@ from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from flore_bot.bot import bot, generate_status_buttons, CHAT_IDS
 from flore_bot.logger import logger
+from flore_bot.storage import order_message_map
+
 
 app = FastAPI()
 
@@ -50,18 +52,20 @@ async def notify(order: Order):
         try:
             if first_image_url:
                 logger.info(f"Отправка фото с описанием: {first_image_url}")
-                await bot.send_photo(
+                msg = await bot.send_photo(
                     chat_id=chat_id,
                     photo=first_image_url,
                     caption=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
             else:
-                await bot.send_message(
+                msg = await bot.send_message(
                     chat_id=chat_id,
                     text=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
+
+            order_message_map.setdefault(order.orderId, {})[chat_id] = msg.message_id
         except Exception as e:
             logger.error(f"Ошибка отправки пользователю {chat_id}: {e}")
     return {"message": "Notification sent"}
@@ -100,13 +104,20 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
             first_image_url = url
             break
 
+    for chat_id, msg_id in order_message_map.get(order.orderId, {}).items():
+        try:
+            await bot.delete_message(chat_id, msg_id)
+        except Exception as e:
+            logger.warning(f"Не удалось удалить сообщение для {chat_id}: {e}")
+    order_message_map.pop(order.orderId, None)
+
     logger.info(f"[notify_status_update] Отправка в чаты: {CHAT_IDS}")
     for chat_id in CHAT_IDS:
         try:
             logger.info(f"[notify_status_update] Sending to chat_id: {chat_id}")
             logger.info(f"[notify_status_update] first_image_url: {first_image_url}")
             if first_image_url:
-                await bot.send_photo(
+                msg = await bot.send_photo(
                     chat_id=chat_id,
                     photo=first_image_url,
                     caption=text,
@@ -114,13 +125,13 @@ async def notify_status_update(order: Order, previousStatus: str = Query(...)):
                 )
                 logger.info(f"[notify_status_update] Photo sent to {chat_id}")
             else:
-                logger.info(f"[notify_status_update] Trying to send message to {chat_id}")
-                await bot.send_message(
+                msg = await bot.send_message(
                     chat_id=chat_id,
                     text=text,
                     reply_markup=generate_status_buttons(order.orderId)
                 )
-                logger.info(f"[notify_status_update] Message sent to {chat_id}")
+            order_message_map.setdefault(order.orderId, {})[chat_id] = msg.message_id
+
         except Exception as e:
             logger.error(f"Ошибка при отправке статуса пользователю {chat_id}: {e}")
     return {"message": "Status update sent"}
